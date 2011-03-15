@@ -3,3 +3,33 @@ h1. ExceptionMailer Rack Middleware
 I made this because I felt the "rack-contrib version":https://github.com/rack/rack-contrib/blob/master/lib/rack/contrib/mailexceptions.rb was needlessly complicated.
 
 This version uses "Pony":https://github.com/benprew/pony and doesn't rely on any SMTP servers for sending.
+
+h2. Usage
+
+Include it in your config.ru like this (basic):
+
+bq. use Rack::ExceptionMailer, :to => 'your.email@yourdomain.com'
+
+Or, with more than one email address to send to and a customized subject:
+
+bq. use Rack::ExceptionMailer,
+	:to => ['evan.lecklider@gmail.com', 'another.email@yourdomain.com'],
+	:subject => 'Error Occurred in Rack Application'
+
+
+Or with full config:
+
+bq. use Rack::ExceptionMailer, 
+	:to => ['evan.lecklider@gmail.com', 'another.email@yourdomain.com'], 
+	:from => 'errors@yourdomain.com', 
+	:subject => 'Error Occurred in Rack Application'
+
+
+
+h2. Testing
+
+I haven't written any tests for this yet but it does work well as long as you have mail installed on your machine.
+
+h2. Contributing / Suggestions
+
+Feel free to get a hold of me with suggestions, fork and request a pull, or just use it and modify it how you like.

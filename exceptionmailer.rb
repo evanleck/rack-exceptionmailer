@@ -7,7 +7,7 @@ module Rack
     def initialize(app, options)
       @app =                    app
       @to =                     Array(options[:to]) # could be an array
-      @from =                   options[:from]      # should be string
+      @from =                   options[:from] || 'errors@yourdomain.com' # should be string
       @subject =                options[:subject] || "Error Caught in Rack Application"
       @template =               ERB.new(TEMPLATE)
     end
