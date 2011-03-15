@@ -1,5 +1,0 @@
-ExceptionMailer Rack Middleware
-
-I made this because I felt the rack-contrib version (https://github.com/rack/rack-contrib/blob/master/lib/rack/contrib/mailexceptions.rb) was needlessly complicated.
-
-This version uses "Pony":https://github.com/benprew/pony and doesn't rely on any SMTP servers for sending.
