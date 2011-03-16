@@ -6,10 +6,10 @@ module Rack
     
     def initialize(app, options)
       @app =                    app
-      @to =                     Array(options[:to]) # could be an array
+      @to =                     Array(options[:to]) # could be an array or just a string
       @from =                   options[:from] || 'errors@yourdomain.com' # should be string
-      @subject =                options[:subject] || "Error Caught in Rack Application"
-      @template =               ERB.new(TEMPLATE)
+      @subject =                options[:subject] || "Error Caught in Rack Application" # again, a string
+      @template =               ERB.new(TEMPLATE) # the template built in here (non-mutable { for the moment })
     end
   
     def call(env)
@@ -31,14 +31,16 @@ module Rack
     end
     
     def send_notification(exception, env)
-      body = @template.result(binding) # not sure about this (binding) thing
+      body = @template.result(binding) # not sure about this "binding" thing
       
+      # loop through each :to address and fire off an email with the error
       @to.each do |to|
         Pony.mail :to => to, :from => @from, :subject  => @subject, :body => body
       end
       
     end
     
+    # don't really understand this but hey, why not?!
     def extract_body(env)
       if io = env['rack.input']
         io.rewind if io.respond_to?(:rewind)
