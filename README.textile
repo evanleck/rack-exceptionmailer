@@ -13,14 +13,14 @@ bq. use Rack::ExceptionMailer, :to => 'your.email@yourdomain.com'
 Or, with more than one email address to send to and a customized subject:
 
 bq. use Rack::ExceptionMailer,
-	:to => ['evan.lecklider@gmail.com', 'another.email@yourdomain.com'],
+	:to => ['your.email@yourdomain.com', 'another.email@yourdomain.com'],
 	:subject => 'Error Occurred in Rack Application'
 
 
 Or with full config:
 
 bq. use Rack::ExceptionMailer, 
-	:to => ['evan.lecklider@gmail.com', 'another.email@yourdomain.com'], 
+	:to => ['your.email@yourdomain.com', 'another.email@yourdomain.com'], 
 	:from => 'errors@yourdomain.com', 
 	:subject => 'Error Occurred in Rack Application'
 
