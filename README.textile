@@ -8,23 +8,24 @@ h2. Usage
 
 Include it in your config.ru like this (basic):
 
-bq. use Rack::ExceptionMailer, :to => 'your.email@yourdomain.com'
+<pre>use Rack::ExceptionMailer, :to => 'your.email@yourdomain.com'</pre>
 
 Or, with more than one email address to send to and a customized subject:
 
-bq. use Rack::ExceptionMailer,
-	:to => ['your.email@yourdomain.com', 'another.email@yourdomain.com'],
-	:subject => 'Error Occurred in Rack Application'
-
+<pre>
+use Rack::ExceptionMailer,
+  :to => ['your.email@yourdomain.com', 'another.email@yourdomain.com'],
+  :subject => 'Error Occurred in Rack Application'
+</pre>
 
 Or with full config:
 
-bq. use Rack::ExceptionMailer, 
-	:to => ['your.email@yourdomain.com', 'another.email@yourdomain.com'], 
-	:from => 'errors@yourdomain.com', 
-	:subject => 'Error Occurred in Rack Application'
-
-
+<pre>
+use Rack::ExceptionMailer, 
+  :to => ['your.email@yourdomain.com', 'another.email@yourdomain.com'], 
+  :from => 'errors@yourdomain.com', 
+  :subject => 'Error Occurred in Rack Application'
+</pre>
 
 h2. Testing
 
