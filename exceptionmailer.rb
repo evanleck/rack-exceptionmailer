@@ -6,10 +6,11 @@ module Rack
     
     def initialize(app, options)
       @app =                    app
-      @to =                     Array(options[:to]) # could be an array or just a string
-      @from =                   options[:from] || 'errors@yourdomain.com' # should be string
+      @to =                     Array(options[:to]) # could be an array
+      @from =                   options[:from]      # should be string
       @subject =                options[:subject] || "Error Caught in Rack Application" # again, a string
       @template =               ERB.new(TEMPLATE) # the template built in here (non-mutable { for the moment })
+      @html_template =          ERB.new(HTML_TEMPLATE) # the same template in HTML
     end
   
     def call(env)
@@ -17,7 +18,7 @@ module Rack
         begin
           @app.call(env)
         rescue => boom
-          # TODO don't allow exceptions from send_notification to propogate
+          # don't allow exceptions from send_notification to propogate
           begin
             send_notification boom, env
           rescue
@@ -31,16 +32,16 @@ module Rack
     end
     
     def send_notification(exception, env)
-      body = @template.result(binding) # not sure about this "binding" thing
+      body = @template.result(binding) # not sure about this (binding) thing
+      html_body = @html_template.result(binding)
       
       # loop through each :to address and fire off an email with the error
       @to.each do |to|
-        Pony.mail :to => to, :from => @from, :subject  => @subject, :body => body
+        Pony.mail :to => to, :from => @from, :subject  => @subject, :body => body, :html_body => html_body
       end
       
     end
     
-    # don't really understand this but hey, why not?!
     def extract_body(env)
       if io = env['rack.input']
         io.rewind if io.respond_to?(:rewind)
@@ -51,8 +52,16 @@ module Rack
     
     TEMPLATE = (<<-'EMAIL').gsub(/^ {4}/, '')
     A <%= exception.class.to_s %> occured: <%= exception.to_s %>
-    <% if body = extract_body(env) %>
+    
+    <% if exception.respond_to?(:backtrace) %>
+    ===================================================================
+    Backtrace:
+    ===================================================================
 
+      <%= exception.backtrace.join("\n  ") %>
+    <% end %>
+    
+    <% if body = extract_body(env) %>
     ===================================================================
     Request Body:
     ===================================================================
@@ -71,14 +80,33 @@ module Rack
         sort{|a,b| a.first <=> b.first}.
         map{ |k,v| "%-25s%p" % [k+':', v] }.
         join("\n  ") %>
+    EMAIL
+    
+    HTML_TEMPLATE = (<<-'EMAIL').gsub(/^ {4}/, '')
+    <h2>A <%= exception.class.to_s %> occured: <%= exception.to_s %></h2>
+    
+  <% if exception.respond_to?(:backtrace) %>
+    <h3>Backtrace:</h3>
+    <%= exception.backtrace.join("<br />") %>
+  <% end %>
+    
+  <% if body = extract_body(env) %>
+    <h3>Request Body:</h3>
 
-    <% if exception.respond_to?(:backtrace) %>
-    ===================================================================
-    Backtrace:
-    ===================================================================
+    <%= body.gsub(/^/, '  ') %>
+  <% end %>
 
-      <%= exception.backtrace.join("\n  ") %>
-    <% end %>
+    <h3>Rack Environment:</h3>
+    <table>
+    <tr>
+    <td>PID:</td> <td><%= $$ %></td>
+    </tr>
+    <tr>
+    <td>PWD:</td><td><%= Dir.getwd %></td>
+    </tr>
+    </table>
+    <br />
+    <%= env.to_a.sort{ |a,b| a.first <=> b.first}.map{ |k,v| "%-25s%p" % [k+':', v] }.join("<br />") %>
     EMAIL
   end
 end
