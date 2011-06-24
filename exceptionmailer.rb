@@ -87,26 +87,19 @@ module Rack
     
   <% if exception.respond_to?(:backtrace) %>
     <h3>Backtrace:</h3>
-    <%= exception.backtrace.join("<br />") %>
-  <% end %>
-    
-  <% if body = extract_body(env) %>
-    <h3>Request Body:</h3>
-
-    <%= body.gsub(/^/, '  ') %>
+    <%= exception.backtrace[0,10].join("<br />") %>
   <% end %>
 
     <h3>Rack Environment:</h3>
     <table>
-    <tr>
-    <td>PID:</td> <td><%= $$ %></td>
-    </tr>
-    <tr>
-    <td>PWD:</td><td><%= Dir.getwd %></td>
-    </tr>
+      <tr>
+        <td><b>PID:</b></td> <td><%= $$ %></td>
+      </tr>
+      <tr>
+        <td><b>PWD:</b></td><td><%= Dir.getwd %></td>
+      </tr>
+    <%= env.to_a.sort { |a,b| a.first <=> b.first}.map { |k, v| "<tr><td><b>#{k}</b></td><td>#{v}</td></tr>" }.join(" ") %>
     </table>
-    <br />
-    <%= env.to_a.sort{ |a,b| a.first <=> b.first}.map{ |k,v| "%-25s%p" % [k+':', v] }.join("<br />") %>
     EMAIL
   end
 end
